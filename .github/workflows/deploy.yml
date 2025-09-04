@@ -18,9 +18,19 @@ jobs:
         run: |
           mkdir public
           shopt -s extglob
+          # Copy everything except .git/.github into public
           cp -r !(public|.git|.github) public || true
-          # Optional SPA fallback – safe to keep even for static sites
-          if [ -f public/index.html ]; then cp public/index.html public/404.html; fi
+
+          # If your main HTML has a different name, copy it to index.html
+          if [ -f "ps_clarity_companion_WORKING - Copy.html" ]; then
+            cp "ps_clarity_companion_WORKING - Copy.html" public/index.html
+          fi
+
+          # SPA fallback (harmless even if not a SPA)
+          if [ -f public/index.html ]; then
+            cp public/index.html public/404.html
+          fi
+
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
