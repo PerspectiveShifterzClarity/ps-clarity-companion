@@ -1,0 +1,30 @@
+name: Deploy to GitHub Pages (Static HTML)
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Copy everything (except .git/.github) into a publish folder
+      - name: Prepare files
+        run: |
+          mkdir public
+          shopt -s extglob
+          cp -r !(public|.git|.github) public || true
+          # Optional SPA fallback – safe to keep even for static sites
+          if [ -f public/index.html ]; then cp public/index.html public/404.html; fi
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          enable_jekyll: false
